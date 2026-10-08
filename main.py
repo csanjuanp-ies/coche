@@ -6,7 +6,7 @@ iteraciones: list[int] = []
 
 for _ in range(10):
     print("*"*80)
-    mundo.inicializar_datos()
+    mundo.inicializar_datos()  # obligaorio por las iteraciones, sino no
     print(mundo)
     iteraciones.append(mundo.run())
 
