@@ -15,7 +15,7 @@ class Mundo:
     TOTAL_LONGITUD:int = 360 # longitud total del mundo  # E o W
     TOTAL_LATITUD:int = 180 # latitud total del mundo N o S
 
-    def __init__(self, simulado:bool = True, visualiazar_mapa:bool = True, visualizar_datos:bool = True):
+    def __init__(self, simulado:bool = False, visualiazar_mapa:bool = True, visualizar_datos:bool = True):
         self._simulacion = simulado
         self._visualizar_mapa = visualiazar_mapa
         self._visualizar_datos = visualizar_datos
@@ -33,7 +33,7 @@ class Mundo:
         direccion: Coche.Direccion = random.choice(list(Coche.Direccion))
         lon_ini: int = random.randint(0, self.TOTAL_LONGITUD // self.TAMAÑO_GRILL - 1)
         lat_ini: int = random.randint(0, self.TOTAL_LATITUD // self.TAMAÑO_GRILL - 1)
-        self._coche: Coche = Coche(lat_ini, lon_ini, direccion)
+        self._coche: Coche = Coche(lat_ini, lon_ini, direccion, self._simulacion)
         # destino
         lon_ini: int = random.randint(0, self.TOTAL_LONGITUD // self.TAMAÑO_GRILL - 1)
         lat_ini: int = random.randint(0, self.TOTAL_LATITUD // self.TAMAÑO_GRILL - 1)

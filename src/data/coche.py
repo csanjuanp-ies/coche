@@ -3,6 +3,7 @@ from src.data.datosmundo import DatosMundo
 from enum import Enum
 from typing import Self
 import random
+import math
 
 
 class Coche:
@@ -30,9 +31,10 @@ class Coche:
         RETROCEDER = 3
 
 
-    def __init__(self, latitud:float, longitud:float, direccion: Direccion = Direccion.NORTE):
+    def __init__(self, latitud:float, longitud:float, direccion: Direccion = Direccion.NORTE, simulacion:bool=False):
         self.posicion: Posicion = Posicion(latitud, longitud) 
-        self.direccion: Coche.Direccion = direccion 
+        self.direccion: Coche.Direccion = direccion
+        self.simulacion: bool = simulacion 
 
     def __str__(self) -> str:
         char_direccion: str = ""
@@ -62,11 +64,11 @@ class Coche:
                 
     def _rotar_derecha(self) -> None:
        self.direccion = Coche.Direccion.rotate_der(self.direccion)
-       # TODO: firar 1sg motores para rotar 90º
+       # TODO: girar 1sg motores para rotar 90º
 
     def _rotar_izquierda(self) -> None:
        self.direccion = Coche.Direccion.rotate_izq(self.direccion)
-       # TODO: firar 1sg motores para rotar -90º
+       # TODO: girar 1sg motores para rotar -90º
 
     def _avanzar(self) -> None:
         # habría que tener en cuenta la dirección para las posiciones extremas 
@@ -80,7 +82,7 @@ class Coche:
                 self.posicion.latitud += self.TAMAÑO_SALTO
             case Coche.Direccion.ESTE:
                 self.posicion.longitud -= self.TAMAÑO_SALTO
-        # TODO: ºavanzar motores 1sg
+        # TODO: avanzar motores 1sg
 
     def _retroceder(self) -> None:
         # habría que tener en cuenta la dirección para las posiciones extremas 
@@ -96,22 +98,47 @@ class Coche:
                 self.posicion.longitud += self.TAMAÑO_SALTO
         # TODO: retroceder motores 1sg
 
+
+    def _calcular_distancia(self, llegada: Posicion) -> float:
+        return ((llegada.longitud - self.posicion.longitud)**2 
+                + (llegada.latitud - self.posicion.latitud)**2)**0.5 
+
+    def _calcular_direccion(self, llegada: Posicion, distancia: float) -> float:
+        rx: float = llegada.longitud - self.posicion.longitud
+        ry: float = llegada.longitud - self.posicion.latitud 
+        s1:float = math.acos(rx / distancia)
+        s2:float = 360 - s1
+        if rx>0 and ry>0:
+            return s1 if 0<= s1 <= 90 else s2
+        elif rx>0 and ry<0:
+            return s1 if 270<= s1 <= 360 else s2
+        elif rx<0 and ry>0:
+            return s1 if 90<= s1 <= 180 else s2
+        elif rx<0 and ry<0:
+            return s1 if 180<= s1 <= 270 else s2
+        return 0
+
     def log(self) -> str:
         return f"Coche en {self.posicion} mirando hacia {self}"
-
+    
     def mover(self, llegada: Posicion, datos_mundo: DatosMundo) -> Coche.Accion:
-        # TODO: llamar a la IA pasando los datos del mundo y 
-        # la posición de llegada y que devuelva la acción a ejecutar 
+       
         opcion: Coche.Accion = Coche.Accion.AVANZAR
-        if datos_mundo.all():
-            opcion = Coche.Accion.RETROCEDER
+        distancia: float = self._calcular_distancia(llegada)
+        direccion: float = self._calcular_direccion(llegada, distancia)
+        if self.simulacion: 
+            if datos_mundo.all() or distancia < 0 or direccion < 0:
+                opcion = Coche.Accion.RETROCEDER
+            else:
+                opcion = random.choice([
+                    Coche.Accion.AVANZAR, 
+                    Coche.Accion.GIRAR_IZQUIERDA, 
+                    Coche.Accion.GIRAR_DERECHA, 
+                    Coche.Accion.RETROCEDER])
         else:
-            opcion = random.choice([
-                Coche.Accion.AVANZAR, 
-                Coche.Accion.GIRAR_IZQUIERDA, 
-                Coche.Accion.GIRAR_DERECHA, 
-                Coche.Accion.RETROCEDER])
-
+             # TODO: llamar a la IA pasando los datos del mundo y
+             # la posición de llegada y que devuelva la acción a ejecutar
+            pass # 
         self._ejecutar_accion(opcion)
-
+        # TODO: leer nueva posición del GPS y actualizar self.posicion
         return opcion
