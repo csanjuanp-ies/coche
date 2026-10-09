@@ -2,3 +2,4 @@
 /.vscode
 /.agents
 ./pytest_cache
+.src/*/*.pyc

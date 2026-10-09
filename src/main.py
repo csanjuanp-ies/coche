@@ -1,4 +1,4 @@
-from src.data.mundo import Mundo
+from data.mundo import Mundo
 
 mundo = Mundo(True, visualiazar_mapa=False, visualizar_datos=False)
 

@@ -1,5 +1,5 @@
-from src.data.posicion import Posicion
-from src.data.datosmundo import DatosMundo
+from data.posicion import Posicion
+from data.datosmundo import DatosMundo
 from enum import Enum
 from typing import Self
 import random
@@ -32,9 +32,15 @@ class Coche:
 
 
     def __init__(self, latitud:float, longitud:float, direccion: Direccion = Direccion.NORTE, simulacion:bool=False):
-        self.posicion: Posicion = Posicion(latitud, longitud) 
-        self.direccion: Coche.Direccion = direccion
-        self.simulacion: bool = simulacion 
+        if simulacion:
+            self.posicion: Posicion = Posicion(latitud, longitud) 
+            self.direccion: Coche.Direccion = direccion
+            self.simulacion: bool = simulacion 
+        else:
+            # Leer datos del GPS y establecer lo siguiente
+            self.posicion: Posicion = Posicion(0, 0) 
+            self.direccion: Coche.Direccion = Coche.Direccion.NORTE
+            self.simulacion: bool = False 
 
     def __str__(self) -> str:
         char_direccion: str = ""
@@ -120,7 +126,13 @@ class Coche:
 
     def log(self) -> str:
         return f"Coche en {self.posicion} mirando hacia {self}"
-    
+
+    def datos_mundo(self) -> DatosMundo:
+        if self.simulacion:
+            return DatosMundo(False, True, True)
+        # TODO: Leer datos con el sensor de ultrasonidos
+        return DatosMundo(True, True, True)
+
     def mover(self, llegada: Posicion, datos_mundo: DatosMundo) -> Coche.Accion:
        
         opcion: Coche.Accion = Coche.Accion.AVANZAR
