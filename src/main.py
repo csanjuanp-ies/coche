@@ -1,6 +1,6 @@
 from data.mundo import Mundo
 
-mundo = Mundo(True, visualiazar_mapa=False, visualizar_datos=False)
+mundo = Mundo(True, visualiazar_mapa=False, visualizar_datos=False, visualizar_ruta=False)
 
 iteraciones: list[int] = []
 

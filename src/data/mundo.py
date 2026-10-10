@@ -15,13 +15,16 @@ class Mundo:
     TOTAL_LONGITUD:int = 360 # longitud total del mundo  # E o W
     TOTAL_LATITUD:int = 180 # latitud total del mundo N o S
 
-    def __init__(self, simulado:bool = False, visualiazar_mapa:bool = True, visualizar_datos:bool = True):
+    def __init__(self, 
+        simulado:bool = False, 
+        visualiazar_mapa:bool = True, 
+        visualizar_datos:bool = True,
+        visualizar_ruta:bool = False):
         self._simulacion = simulado
         self._visualizar_mapa = visualiazar_mapa
         self._visualizar_datos = visualizar_datos
-
-        if self._simulacion:
-            self._inicializar_grid()
+        self._visualizar_ruta = visualizar_ruta
+            
         self.inicializar_datos()
 
     def __str__(self):
@@ -29,6 +32,7 @@ class Mundo:
 
     def inicializar_datos(self):
         if self._simulacion:
+            self._inicializar_grid()
             try: # Si pediomos recrear condiciones borra la posición del coche anterior
                 self.grid[int(self._coche.posicion.latitud)][int(self._coche.posicion.longitud)] = " "
             except:
@@ -91,7 +95,8 @@ class Mundo:
             fin: bool = False
             while not fin: # for _ in range(10): #  
                 datos_mundo: DatosMundo = self._leer_mundo()
-                self.grid[int(self._coche.posicion.latitud)][int(self._coche.posicion.longitud)] = " "
+                if not self._visualizar_ruta:
+                    self.grid[int(self._coche.posicion.latitud)][int(self._coche.posicion.longitud)] = " "
                 if self._visualizar_datos:
                     print("old:", self._coche.log()) 
                 accion: Coche.Accion = self._coche.mover(self.destino, datos_mundo)
@@ -105,8 +110,12 @@ class Mundo:
                 fin = self._coche.posicion == self.destino
                 if self._visualizar_datos:
                     print("fin:", fin)
-                self._dibujar_mundo()
+                if not self._visualizar_ruta:
+                    self._dibujar_mundo()
                 num_iteraciones += 1
+            self.grid[int(self.destino.latitud)][int(self.destino.longitud)] = "X"
+            if self._visualizar_ruta:
+                self._dibujar_mundo()
             print(f"Simulación finalizada en {num_iteraciones} iteraciones.")
             return num_iteraciones
         return 0

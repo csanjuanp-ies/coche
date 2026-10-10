@@ -1,0 +1,29 @@
+[book]
+title = "Coche autónomo"
+authors = ["César San Juan Pastor"]
+language = "es"
+description = "Proyecto para crear un coche autónomo con microcontroladores"
+
+
+[output.html]
+
+
+[output.epub]
+# Optional settings
+title = "Coche autónomo"
+author = "César San Juan Pastor"
+
+
+[output.pdf]
+landscape = false
+scale = 0.8
+paper-width = 8.27
+paper-height = 11.7
+margin-top = 0.3
+margin-bottom = 0.3
+margin-left = 0.2
+margin-right = 0.2
+
+generate-document-outline = true
+display-header-footer = true
+footer-template = "<p style='font-size:10px; margin-left: 48%'><span class='pageNumber'></span> de <span class='totalPages'></span></p>"

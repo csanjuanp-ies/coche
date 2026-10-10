@@ -2,4 +2,7 @@
 /.vscode
 /.agents
 ./pytest_cache
-.src/*/*.pyc
+/src/*/*.pyc
+/docs/book/html
+*.pyc
+__pycache__/
