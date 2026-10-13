@@ -5,7 +5,7 @@ import math
 
 
 class CocheReal(Coche):
-    TAMAÑO_SALTO: int = 1 # igual que el mundo debe ser 1 para simular 0.0001 para real
+    TAMAÑO_SALTO: float = 0.0001
 
     def __init__(self, latitud:float, longitud:float, direccion: Coche.Direccion = Coche.Direccion.NORTE, simulacion:bool=False):
             super().__init__(0, 0, direccion, False)

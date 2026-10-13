@@ -1,6 +1,6 @@
 from twin.mundo import Mundo
 
-mundo = Mundo().hacer_simulado()#.hacer_visualizar_datos().hacer_visualizar_mapa().hacer_visualizar_ruta()
+mundo = Mundo().hacer_simulado()#.hacer_visualizar_datos()#.hacer_visualizar_mapa()#.hacer_visualizar_ruta()
 
 iteraciones: list[int] = []
 
