@@ -82,7 +82,7 @@ class Mundo:
     def inicializar_datos(self):
         if self._simulacion:
             self._inicializar_grid()
-            try: # Si pediomos recrear condiciones borra la posición del coche anterior
+            try: # Si pedimos recrear condiciones borra la posición del coche anterior
                 self.grid[int(self._coche.posicion.latitud)][int(self._coche.posicion.longitud)] = " "
             except:
                 pass

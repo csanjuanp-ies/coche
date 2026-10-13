@@ -24,17 +24,6 @@ class CocheReal(Coche):
                 char_direccion = "\U00002192"
 
         return f"{char_direccion}"
-
-    def _ejecutar_accion(self, accion: Coche.Accion) -> None:
-        match accion:
-            case Coche.Accion.AVANZAR:
-               self._avanzar()
-            case Coche.Accion.RETROCEDER:
-               self._retroceder()
-            case Coche.Accion.GIRAR_IZQUIERDA:
-                self._rotar_izquierda()
-            case Coche.Accion.GIRAR_DERECHA:
-                self._rotar_derecha()
                 
     def _rotar_derecha(self) -> None:
        self.direccion = Coche.Direccion.rotate_der(self.direccion)
