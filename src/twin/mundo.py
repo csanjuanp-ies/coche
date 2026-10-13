@@ -3,7 +3,9 @@ Representa elmundo real en una cuadrícula de tamaño fijo,
 Por simplicidad aremos pruebas con tamaño de 10º
 al pasar a producción, se reducirá a tamaño de 0,0001º
 ."""
-from twin.coche import Coche
+from twin.coche.coche import Coche
+from twin.coche.coche_simulado import CocheSimulado
+from twin.coche.coche_real import CocheReal
 from clases_datos.posicion import Posicion
 from clases_datos.datosmundo import DatosMundo
 import random
@@ -87,7 +89,7 @@ class Mundo:
             direccion: Coche.Direccion = random.choice(list(Coche.Direccion))
             lon_ini: int = random.randint(0, self.TOTAL_LONGITUD // self.TAMAÑO_GRILL - 1)
             lat_ini: int = random.randint(0, self.TOTAL_LATITUD // self.TAMAÑO_GRILL - 1)
-            self._coche: Coche = Coche(lat_ini, lon_ini, direccion, self._simulacion)
+            self._coche: Coche = CocheSimulado(lat_ini, lon_ini, direccion, self._simulacion)
             # destino
             lon_ini: int = random.randint(0, self.TOTAL_LONGITUD // self.TAMAÑO_GRILL - 1)
             lat_ini: int = random.randint(0, self.TOTAL_LATITUD // self.TAMAÑO_GRILL - 1)
@@ -95,7 +97,7 @@ class Mundo:
             self.grid[int(self._coche.posicion.latitud)][int(self._coche.posicion.longitud)] = str(self._coche)
         else:
             # Sino es simulación el coche coge datos del GPS
-            self._coche: Coche = Coche(0,0, Coche.Direccion.NORTE, False)
+            self._coche: Coche = CocheReal(0,0, Coche.Direccion.NORTE, False)
             # Poner datos destino HARDCode
             self.destino: Posicion = Posicion(0,0)
         
