@@ -12,6 +12,11 @@ class Posicion:
     def __str__(self):
         return f"({self._longitud}, {self._latitud})"
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Posicion):
+            return NotImplemented
+        return self.latitud == other.latitud and self.longitud == other.longitud
+
     @property
     def longitud(self) -> float:
         return self._longitud
@@ -37,8 +42,3 @@ class Posicion:
             self._latitud = 90.0
         elif value <= -90.0:
             self._latitud = -90.0
-
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, Posicion):
-            return NotImplemented
-        return self.latitud == other.latitud and self.longitud == other.longitud

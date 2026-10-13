@@ -3,9 +3,9 @@ Representa elmundo real en una cuadrícula de tamaño fijo,
 Por simplicidad aremos pruebas con tamaño de 10º
 al pasar a producción, se reducirá a tamaño de 0,0001º
 ."""
-from data.coche import Coche
-from data.posicion import Posicion
-from data.datosmundo import DatosMundo
+from twin.coche import Coche
+from clases_datos.posicion import Posicion
+from clases_datos.datosmundo import DatosMundo
 import random
 
 
@@ -15,20 +15,67 @@ class Mundo:
     TOTAL_LONGITUD:int = 360 # longitud total del mundo  # E o W
     TOTAL_LATITUD:int = 180 # latitud total del mundo N o S
 
-    def __init__(self, 
-        simulado:bool = False, 
-        visualiazar_mapa:bool = True, 
-        visualizar_datos:bool = True,
-        visualizar_ruta:bool = False):
-        self._simulacion = simulado
-        self._visualizar_mapa = visualiazar_mapa
-        self._visualizar_datos = visualizar_datos
-        self._visualizar_ruta = visualizar_ruta
-            
+    def __init__(self):
+        self._simulacion = False
+        self._visualizar_mapa = False
+        self._visualizar_datos = False
+        self._visualizar_ruta = False
         self.inicializar_datos()
 
     def __str__(self):
         return f"Coche en {self._coche.posicion} con destino {self.destino}"
+
+    def _inicializar_grid(self):
+       self.grid = [
+            [" " for _ in range(self.TOTAL_LONGITUD // self.TAMAÑO_GRILL)] 
+                for _ in range(self.TOTAL_LATITUD // self.TAMAÑO_GRILL)
+            ]
+
+    def _leer_mundo(self) -> DatosMundo:
+        return self._coche.datos_mundo()
+
+    def _dibujar_mundo(self):
+        if not self._visualizar_mapa:
+            return
+        for lat in range(len(self.grid)):
+            print("|", end="")
+            for lon in range(len(self.grid[lat])):
+                print(f"{self.grid[lat][lon]}", end="|")
+            print(" ")
+        print("*"*80)
+
+    def _resituar_coche_en_simulacion(self):
+        lat:int = int(self._coche.posicion.latitud)
+        lon:int = int(self._coche.posicion.longitud)
+
+        if lon < 0:
+            lon = 35
+        elif lon >= 36:
+            lon = 0
+        if lat < 0:
+            lat = 17
+        elif lat >= 18:
+            lat = 0
+
+        self._coche.posicion.latitud = lat
+        self._coche.posicion.longitud = lon
+
+    # Patrón builder para configurar el mundo
+    def hacer_simulado(self):
+        self._simulacion = True
+        return self
+
+    def hacer_visualizar_mapa(self):
+        self._visualizar_mapa = True
+        return self
+
+    def hacer_visualizar_datos(self):
+        self._visualizar_datos = True
+        return self
+
+    def hacer_visualizar_ruta(self):
+        self._visualizar_ruta = True
+        return self
 
     def inicializar_datos(self):
         if self._simulacion:
@@ -52,40 +99,6 @@ class Mundo:
             # Poner datos destino HARDCode
             self.destino: Posicion = Posicion(0,0)
         
-    def _inicializar_grid(self):
-       self.grid = [
-            [" " for _ in range(self.TOTAL_LONGITUD // self.TAMAÑO_GRILL)] 
-                for _ in range(self.TOTAL_LATITUD // self.TAMAÑO_GRILL)
-            ]
-
-    def _leer_mundo(self) -> DatosMundo:
-        return self._coche.datos_mundo()
-
-    def _dibujar_mundo(self):
-        if not self._visualizar_mapa:
-            return
-        for lat in range(len(self.grid)):
-            print("|", end="")
-            for lon in range(len(self.grid[lat])):
-                print(f"{self.grid[lat][lon]}", end="|")
-            print(" ")
-        print("*"*80)
-
-    def _resituar_coche(self):
-        lat:int = int(self._coche.posicion.latitud)
-        lon:int = int(self._coche.posicion.longitud)
-
-        if lon < 0:
-            lon = 35
-        elif lon >= 36:
-            lon = 0
-        if lat < 0:
-            lat = 17
-        elif lat >= 18:
-            lat = 0
-
-        self._coche.posicion.latitud = lat
-        self._coche.posicion.longitud = lon
 
     def run(self) -> int:
         """Inicia la simulación del mundo."""
@@ -95,23 +108,31 @@ class Mundo:
             fin: bool = False
             while not fin: # for _ in range(10): #  
                 datos_mundo: DatosMundo = self._leer_mundo()
+                
                 if not self._visualizar_ruta:
                     self.grid[int(self._coche.posicion.latitud)][int(self._coche.posicion.longitud)] = " "
                 if self._visualizar_datos:
                     print("old:", self._coche.log()) 
+
                 accion: Coche.Accion = self._coche.mover(self.destino, datos_mundo)
+
                 if self._visualizar_datos:
                     print(accion)
-                self._resituar_coche()  # en la simulación el origen 0,0 arriba izquierda y máx de 35,17
+                
+                self._resituar_coche_en_simulacion()  # en la simulación el origen 0,0 arriba izquierda y máx de 35,17
+               
                 if self._visualizar_datos:
                     print("new:", self._coche.log())
                     print("destino:", self.destino) 
+                
                 self.grid[int(self._coche.posicion.latitud)][int(self._coche.posicion.longitud)] = str(self._coche)
                 fin = self._coche.posicion == self.destino
+                
                 if self._visualizar_datos:
                     print("fin:", fin)
                 if not self._visualizar_ruta:
                     self._dibujar_mundo()
+                
                 num_iteraciones += 1
             self.grid[int(self.destino.latitud)][int(self.destino.longitud)] = "X"
             if self._visualizar_ruta:

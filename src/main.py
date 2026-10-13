@@ -1,12 +1,13 @@
-from data.mundo import Mundo
+from twin.mundo import Mundo
 
-mundo = Mundo(True, visualiazar_mapa=False, visualizar_datos=False, visualizar_ruta=False)
+mundo = Mundo().hacer_simulado()
+#.hacer_visualizar_datos().hacer_visualizar_mapa().hacer_visualizar_ruta()
 
 iteraciones: list[int] = []
 
 for _ in range(10):
     print("*"*80)
-    mundo.inicializar_datos()  # obligaorio por las iteraciones, sino no
+    mundo.inicializar_datos()  # obligaorio por las iteraciones
     print(mundo)
     iteraciones.append(mundo.run())
 

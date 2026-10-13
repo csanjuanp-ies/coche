@@ -1,6 +1,6 @@
 import pytest
 
-from src.data.posicion import Posicion
+from src.clases_datos.posicion import Posicion
 
 
 def test_inicializacion_guarda_latitud_y_longitud() -> None:

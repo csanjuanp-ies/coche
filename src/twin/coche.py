@@ -1,5 +1,5 @@
-from data.posicion import Posicion
-from data.datosmundo import DatosMundo
+from clases_datos.posicion import Posicion
+from clases_datos.datosmundo import DatosMundo
 from enum import Enum
 from typing import Self
 import random
