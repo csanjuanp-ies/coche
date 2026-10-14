@@ -1,5 +1,5 @@
 from clases_datos.posicion import Posicion
-from clases_datos.datosmundo import DatosMundo
+from clases_datos.datos_mundo import DatosMundo
 from twin.coche.coche import Coche
 import random
 import math

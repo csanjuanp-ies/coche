@@ -1,5 +1,5 @@
 from clases_datos.posicion import Posicion
-from clases_datos.datosmundo import DatosMundo
+from clases_datos.datos_mundo import DatosMundo
 from enum import Enum
 from typing import Self
 from abc import ABCMeta, abstractmethod
