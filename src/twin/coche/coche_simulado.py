@@ -8,7 +8,11 @@ import math
 class CocheSimulado(Coche):
     TAMAÑO_SALTO: int = 1
 
-    def __init__(self, latitud:float, longitud:float, direccion: Coche.Direccion = Coche.Direccion.NORTE, simulacion:bool=False):
+    def __init__(self, 
+                 latitud:float, 
+                 longitud:float, 
+                 direccion: Coche.Direccion = Coche.Direccion.NORTE, 
+                 simulacion:bool=False):
         super().__init__(latitud, longitud, direccion, True)   
 
     def __str__(self) -> str:
@@ -59,13 +63,15 @@ class CocheSimulado(Coche):
                 self.posicion.longitud += self.TAMAÑO_SALTO
 
 
-    def _calcular_distancia(self, llegada: Posicion) -> float:
-        return ((llegada.longitud - self.posicion.longitud)**2 
-                + (llegada.latitud - self.posicion.latitud)**2)**0.5 
+    def _calcular_distancia(self, destino: Posicion) -> float:
+        return ((destino.longitud - self.posicion.longitud)**2 
+                + (destino.latitud - self.posicion.latitud)**2)**0.5 
 
-    def _calcular_direccion(self, llegada: Posicion, distancia: float) -> float:
-        rx: float = llegada.longitud - self.posicion.longitud
-        ry: float = llegada.longitud - self.posicion.latitud 
+    def _calcular_direccion(self, destino: Posicion, distancia: float) -> float:
+        rx: float = destino.longitud - self.posicion.longitud
+        ry: float = destino.longitud - self.posicion.latitud
+        if distancia == 0:
+           return 0
         s1:float = math.acos(rx / distancia)
         s2:float = 360 - s1
         if rx>0 and ry>0:
@@ -82,21 +88,35 @@ class CocheSimulado(Coche):
         return f"Coche en {self.posicion} mirando hacia {self}"
 
     def datos_mundo(self) -> DatosMundo:
-        return DatosMundo(False, True, True)
+        ## Datos simulados
+        return DatosMundo(
+            random.choice([False, True]), 
+            random.choice([False, True]), 
+            random.choice([False, True]))
 
 
-    def mover(self, llegada: Posicion, datos_mundo: DatosMundo) -> Coche.Accion:
+    def mover(self, destino: Posicion, datos_mundo: DatosMundo) -> Coche.Accion:
+        fin: bool = False
         opcion: Coche.Accion = Coche.Accion.AVANZAR
-        distancia: float = self._calcular_distancia(llegada)
-        direccion: float = self._calcular_direccion(llegada, distancia)
+        distancia: float = self._calcular_distancia(destino)
+        direccion: float = self._calcular_direccion(destino, distancia)
         if datos_mundo.all() or distancia < 0 or direccion < 0:
             opcion = Coche.Accion.RETROCEDER
         else:
-            opcion = random.choice([
-                Coche.Accion.AVANZAR, 
-                Coche.Accion.GIRAR_IZQUIERDA, 
-                Coche.Accion.GIRAR_DERECHA, 
-                Coche.Accion.RETROCEDER])
-
+            while not fin:
+                opcion = random.choice([
+                    Coche.Accion.AVANZAR, 
+                    Coche.Accion.GIRAR_IZQUIERDA, 
+                    Coche.Accion.GIRAR_DERECHA, 
+                    Coche.Accion.RETROCEDER])
+                if opcion == Coche.Accion.AVANZAR and not datos_mundo.frente:
+                    fin = True
+                elif opcion == Coche.Accion.GIRAR_IZQUIERDA and not datos_mundo.izquierda:
+                    fin = True
+                elif opcion == Coche.Accion.GIRAR_DERECHA and not datos_mundo.derecha:
+                    fin = True
+                else:
+                    fin = False
+                                
         self._ejecutar_accion(opcion)
         return opcion

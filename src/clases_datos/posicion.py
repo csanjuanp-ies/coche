@@ -1,4 +1,7 @@
 class Posicion:
+    """
+        Representa una posición en la superficie de la Tierra.
+    """
     MAX_LONGITUD: float = 180.0
     MIN_LONGITUD: float = -180.0
     MAX_LATITUD: float = 90.0

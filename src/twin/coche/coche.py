@@ -6,6 +6,14 @@ from abc import ABCMeta, abstractmethod
 
 
 class Coche(metaclass=ABCMeta):
+    """
+        Clase abstracta (no existen interfaces en python) que representa un coche.
+        Contiene la posición, dirección y métodos abstractos que deben implementar las clases hijas.
+
+        Implementa dos enumeraciones:
+        - Direccion: representa las direcciones cardinales (NORTE, ESTE, SUR, OESTE) y métodos para rotar a la izquierda o derecha.
+        - Accion: representa las acciones que puede realizar el coche (AVANZAR, GIRAR_IZQUIERDA, GIRAR_DERECHA, RETROCEDER).
+    """
     TAMAÑO_SALTO: int = 1 # igual que el mundo debe ser 1 para simular 0.0001 para real
     
     class Direccion(Enum):
@@ -40,6 +48,10 @@ class Coche(metaclass=ABCMeta):
         pass
 
     def _ejecutar_accion(self, accion: Accion) -> None:
+        """
+            Método llamado generalmente desde el método mover() de las clases 
+            hijas para ejecutar la acción correspondiente.
+        """
         match accion:
             case Coche.Accion.AVANZAR:
                self._avanzar()
@@ -67,11 +79,11 @@ class Coche(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def _calcular_distancia(self, llegada: Posicion) -> float:
+    def _calcular_distancia(self, destino: Posicion) -> float:
         pass
 
     @abstractmethod
-    def _calcular_direccion(self, llegada: Posicion, distancia: float) -> float:
+    def _calcular_direccion(self, destino: Posicion, distancia: float) -> float:
         pass
 
     @abstractmethod
@@ -83,5 +95,5 @@ class Coche(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def mover(self, llegada: Posicion, datos_mundo: DatosMundo) -> Coche.Accion:
+    def mover(self, destino: Posicion, datos_mundo: DatosMundo) -> Coche.Accion:
       pass

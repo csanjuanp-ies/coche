@@ -1,7 +1,7 @@
 """
-Representa elmundo real en una cuadrícula de tamaño fijo,
-Por simplicidad aremos pruebas con tamaño de 10º
-al pasar a producción, se reducirá a tamaño de 0,0001º
+    Representa elmundo real en una cuadrícula de tamaño fijo,
+    Por simplicidad aremos pruebas con tamaño de 10º
+    al pasar a producción, se reducirá a tamaño de 0,0001
 ."""
 from twin.coche.coche import Coche
 from twin.coche.coche_simulado import CocheSimulado
@@ -12,22 +12,25 @@ import random
 
 
 class Mundo:
-    """Representa el mundo del juego."""
     TAMAÑO_GRILL: int = 10 # nuestro mundo de 10º 36x18
     TOTAL_LONGITUD:int = 360 # longitud total del mundo  # E o W
     TOTAL_LATITUD:int = 180 # latitud total del mundo N o S
 
     def __init__(self):
-        self._simulacion = False
-        self._visualizar_mapa = False
-        self._visualizar_datos = False
-        self._visualizar_ruta = False
+        self._simulacion = False  # El mundo se utiliza para entrenar la RRNN
+        self._visualizar_mapa = False  # Visualizar el mapa del mundo
+        self._visualizar_datos = False  # Visualizar los datos del coche y del mundo
+        self._visualizar_ruta = False  # Visualizar la ruta del coche
         self.inicializar_datos()
 
     def __str__(self):
         return f"Coche en {self._coche.posicion} con destino {self.destino}"
 
     def _inicializar_grid(self):
+       """
+         Inicializa la cuadrícula del mundo con espacios vacíos.
+         Se utiliza cuando hay una simulación
+       """
        self.grid = [
             [" " for _ in range(self.TOTAL_LONGITUD // self.TAMAÑO_GRILL)] 
                 for _ in range(self.TOTAL_LATITUD // self.TAMAÑO_GRILL)
@@ -47,6 +50,10 @@ class Mundo:
         print("*"*80)
 
     def _resituar_coche_en_simulacion(self):
+        """
+            Cuando desplazamos el coche, si en modo simulación se sale del mapa, 
+            lo resituamos en el lado contrario.
+        """
         lat:int = int(self._coche.posicion.latitud)
         lon:int = int(self._coche.posicion.longitud)
 
@@ -80,12 +87,15 @@ class Mundo:
         return self
 
     def inicializar_datos(self):
+        # Patrón factoria para crear el coche según el tipo de mundo
         if self._simulacion:
             self._inicializar_grid()
-            try: # Si pedimos recrear condiciones borra la posición del coche anterior
+            try: 
+                # Si pedimos recrear condiciones borra la posición anterior del coche en el grid
                 self.grid[int(self._coche.posicion.latitud)][int(self._coche.posicion.longitud)] = " "
             except:
                 pass
+            # origen
             direccion: Coche.Direccion = random.choice(list(Coche.Direccion))
             lon_ini: int = random.randint(0, self.TOTAL_LONGITUD // self.TAMAÑO_GRILL - 1)
             lat_ini: int = random.randint(0, self.TOTAL_LATITUD // self.TAMAÑO_GRILL - 1)
@@ -94,51 +104,66 @@ class Mundo:
             lon_ini: int = random.randint(0, self.TOTAL_LONGITUD // self.TAMAÑO_GRILL - 1)
             lat_ini: int = random.randint(0, self.TOTAL_LATITUD // self.TAMAÑO_GRILL - 1)
             self.destino: Posicion = Posicion(lat_ini, lon_ini)
+            # Posicionamos en el Grid el coche según la dirección correspondiente
             self.grid[int(self._coche.posicion.latitud)][int(self._coche.posicion.longitud)] = str(self._coche)
         else:
-            # Sino es simulación el coche coge datos del GPS
+            # Si no es simulación el coche coge datos del GPS (False último parámetro)
             self._coche: Coche = CocheReal(0,0, Coche.Direccion.NORTE, False)
             # Poner datos destino HARDCode
             self.destino: Posicion = Posicion(0,0)
         
 
     def run(self) -> int:
-        """Inicia la simulación del mundo."""
+        """
+            Inicia la simulación del mundo.
+        """
         num_iteraciones: int = 0
         if self._simulacion:
             self._dibujar_mundo()
             fin: bool = False
             while not fin: # for _ in range(10): #  
                 datos_mundo: DatosMundo = self._leer_mundo()
-                
+
+                # Log por pantalla
                 if not self._visualizar_ruta:
+                    # Si hay que visulizar la ruta no se borran los datos del movimiento anterior
                     self.grid[int(self._coche.posicion.latitud)][int(self._coche.posicion.longitud)] = " "
                 if self._visualizar_datos:
                     print("old:", self._coche.log()) 
 
                 accion: Coche.Accion = self._coche.mover(self.destino, datos_mundo)
 
+                # Log por pantalla
                 if self._visualizar_datos:
-                    print(accion)
+                    print("accion:", accion)
+                    print("Datos mundo:", datos_mundo)
                 
                 self._resituar_coche_en_simulacion()  # en la simulación el origen 0,0 arriba izquierda y máx de 35,17
-               
+
+                # Log por pantalla
                 if self._visualizar_datos:
                     print("new:", self._coche.log())
                     print("destino:", self.destino) 
                 
                 self.grid[int(self._coche.posicion.latitud)][int(self._coche.posicion.longitud)] = str(self._coche)
-                fin = self._coche.posicion == self.destino
                 
+                fin = self._coche.posicion == self.destino
+
+                # Log por pantalla
                 if self._visualizar_datos:
                     print("fin:", fin)
                 if not self._visualizar_ruta:
                     self._dibujar_mundo()
                 
                 num_iteraciones += 1
+
+            # Hemos llegado al fin, lo marcamos en el grid    
             self.grid[int(self.destino.latitud)][int(self.destino.longitud)] = "X"
+            
+            # Log por pantalla
             if self._visualizar_ruta:
                 self._dibujar_mundo()
             print(f"Simulación finalizada en {num_iteraciones} iteraciones.")
+
             return num_iteraciones
-        return 0
+        return -1  # Indica que no se ha ejecutado la simulación
